@@ -92,8 +92,6 @@ export class PipelineStack extends cdk.Stack {
             
         });
 
-        pipeline.artifactBucket.grantRead(prepareChangeSetAction.deploymentRole);
-
         pipeline.addStage({
             stageName: 'Source',
             actions: [sourceAction],
@@ -105,7 +103,9 @@ export class PipelineStack extends cdk.Stack {
         pipeline.addStage({
             stageName: 'Deploy',
             actions: [prepareChangeSetAction],
-        })
+        });
+
+        pipeline.artifactBucket.grantRead(prepareChangeSetAction.deploymentRole);
     }
 }
 
