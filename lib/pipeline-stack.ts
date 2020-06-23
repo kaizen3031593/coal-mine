@@ -21,29 +21,6 @@ export class PipelineStack extends cdk.Stack {
         trigger: codepipeline_actions.GitHubTrigger.POLL,
         });
 
-        const project = new codebuild.PipelineProject(this, 'ProjectBuild', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-            version: '0.2',
-            phases: {
-            install: {
-                commands: [
-                    'npm install -g aws-cdk',
-                    'npm install',
-                ],
-            },
-            build: {
-                commands: [
-                    'npm run build',
-                    'npm run cdk synth',
-                ],
-            },
-            },
-        }),
-        environment: {
-            buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
-        },
-        });
-
         const pipelineStack = cdk.Stack.of(this);
 
         const projectBuildOutput = new codepipeline.Artifact('ProjectBuildOutput');
@@ -59,6 +36,7 @@ export class PipelineStack extends cdk.Stack {
             adminPermissions: true,
             stackName: 'prepareChangeSet',
             templatePath: projectBuildOutput.atPath(this.templateFile),
+            
         });
 
         // const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
@@ -68,28 +46,66 @@ export class PipelineStack extends cdk.Stack {
         // });
 
         // Create a pipeline
-        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-            stages: [
-                {
-                    stageName: 'Source',
-                    actions: [sourceAction],
-                },
-                {
-                    stageName: 'Build',
-                    actions: [buildAction],
-                },
-                {
-                    stageName: 'PreparePipeline',
-                    actions: [prepareChangeSetAction],
-                },
-                // {
-                //     stageName: 'ExecutePipeline',
-                //     actions: [executeChangeSetAction],
-                // }
-            ],
-        });
+        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+        // const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
+        //     stages: [
+        //         {
+        //             stageName: 'Source',
+        //             actions: [sourceAction],
+        //         },
+        //         {
+        //             stageName: 'Build',
+        //             actions: [buildAction],
+        //         },
+        //         {
+        //             stageName: 'PreparePipeline',
+        //             actions: [prepareChangeSetAction],
+        //         },
+        //         // {
+        //         //     stageName: 'ExecutePipeline',
+        //         //     actions: [executeChangeSetAction],
+        //         // }
+        //     ],
+        // });
 
         pipeline.artifactBucket.grantRead(prepareChangeSetAction.deploymentRole);
+
+        const project = new codebuild.PipelineProject(this, 'ProjectBuild', {
+            buildSpec: codebuild.BuildSpec.fromObject({
+                version: '0.2',
+                phases: {
+                install: {
+                    commands: [
+                        'npm install -g aws-cdk',
+                        'npm install',
+                    ],
+                },
+                build: {
+                    commands: [
+                        'npm run build',
+                        'npm run cdk synth',
+                    ],
+                },
+                },
+            }),
+            environment: {
+                buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+            },
+            encryptionKey: pipeline.artifactBucket.encryptionKey,
+        });
+
+        pipeline.addStage({
+            stageName: 'Source',
+            actions: [sourceAction],
+        });
+        pipeline.addStage({
+            stageName: 'Build',
+            actions: [buildAction],
+        });
+        pipeline.addStage({
+            stageName: 'Deploy',
+            actions: [prepareChangeSetAction],
+        })
     }
 }
 
