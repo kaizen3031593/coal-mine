@@ -68,7 +68,7 @@ export class PipelineStack extends cdk.Stack {
         // });
 
         // Create a pipeline
-        new codepipeline.Pipeline(this, 'MyPipeline', {
+        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
             stages: [
                 {
                     stageName: 'Source',
@@ -87,7 +87,9 @@ export class PipelineStack extends cdk.Stack {
                 //     actions: [executeChangeSetAction],
                 // }
             ],
-            });
+        });
+
+        pipeline.artifactBucket.grantRead(prepareChangeSetAction.deploymentRole);
     }
 }
 
