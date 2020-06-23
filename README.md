@@ -23,9 +23,13 @@ The first endpoint takes in two query parameters: `name` and `food`. You can hit
 https://<domain_name>.amazonaws.com/prod/?name=popeye&food=spinach
 ```
 
+You should receive a greeting as a response.
+
 The second endpoint takes in one query parameter: `word`. Try to guess the magic word!
 
 ```
 https://<domain_name>.amazonaws.com/prod/?word=magicword
 ```
+
+You should receive an output that lets you know if you were correct.
 
