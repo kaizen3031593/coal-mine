@@ -25,6 +25,10 @@
     "@aws-cdk/aws-apigateway": "1.46.0",
     "@aws-cdk/aws-synthetics": "1.46.0",
     "@aws-cdk/aws-route53": "1.46.0",
+    "@aws-cdk/aws-codebuild": "1.46.0",
+    "@aws-cdk/aws-codepipeline": "1.46.0",
+    "@aws-cdk/aws-codepipeline-actions": "1.46.0",
+    "@aws-cdk/aws-secretsmanager": "1.46.0",
     "@aws-cdk/core": "1.46.0"
   }
 }
