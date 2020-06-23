@@ -56,16 +56,16 @@ export class PipelineStack extends cdk.Stack {
         
         const prepareChangeSetAction = new codepipeline_actions.CloudFormationCreateUpdateStackAction({
             actionName: 'Prepare',
-            adminPermissions: false,
+            adminPermissions: true,
             stackName: 'prepareChangeSet',
             templatePath: projectBuildOutput.atPath(this.templateFile),
         });
 
-        const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
-            actionName: 'Deploy',
-            stackName: 'executeChangeSet',
-            changeSetName: 'pipelineChangeSet',
-        });
+        // const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
+        //     actionName: 'Deploy',
+        //     stackName: 'executeChangeSet',
+        //     changeSetName: 'pipelineChangeSet',
+        // });
 
         // Create a pipeline
         new codepipeline.Pipeline(this, 'MyPipeline', {
@@ -82,10 +82,10 @@ export class PipelineStack extends cdk.Stack {
                     stageName: 'PreparePipeline',
                     actions: [prepareChangeSetAction],
                 },
-                {
-                    stageName: 'ExecutePipeline',
-                    actions: [executeChangeSetAction],
-                }
+                // {
+                //     stageName: 'ExecutePipeline',
+                //     actions: [executeChangeSetAction],
+                // }
             ],
             });
     }
