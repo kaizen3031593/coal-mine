@@ -6,7 +6,7 @@ import { PipelineStack } from '../lib/pipeline-stack';
 const app = new cdk.App();
 const lambdaStack = new ReferenceAppStack(app, 'LambdaStack');
 new PipelineStack(app, 'PipelineStack', {
-    lambdaCode: lambdaStack.lambdaCode,
+    lambdaCode1: lambdaStack.lambdaCode1,
 });
 
 app.synth();

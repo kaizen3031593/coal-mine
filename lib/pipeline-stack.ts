@@ -7,7 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 
 export interface PipelineStackProps extends cdk.StackProps {
-    readonly lambdaCode: lambda.CfnParametersCode;
+    readonly lambdaCode1: lambda.CfnParametersCode;
+    //readonly lambdaCode2: lambda.CfnParametersCode;
 }
 
 export class PipelineStack extends cdk.Stack {
@@ -19,9 +20,6 @@ export class PipelineStack extends cdk.Stack {
         //     stackName: 'executeChangeSet',
         //     changeSetName: 'pipelineChangeSet',
         // });
-
-        // Create a pipeline
-        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
         // Related to source action
         const sourceOutput = new codepipeline.Artifact();
@@ -85,7 +83,6 @@ export class PipelineStack extends cdk.Stack {
                 'base-directory': 'lambda',
                 files: [
                   'hello.js',
-                  'discussion.js',
                   'node_modules/**/*',
                 ],
               },
@@ -118,26 +115,42 @@ export class PipelineStack extends cdk.Stack {
             stackName: 'Lambda Deploy Stack',
             templatePath: projectBuildOutput.atPath('LambdaStack.template.json'),   
             parameterOverrides: {
-                ...props.lambdaCode.assign(lambdaOutput.s3Location),
+                ...props.lambdaCode1.assign(lambdaOutput.s3Location),
             },
             extraInputs: [lambdaOutput], 
         });
 
+        // Create a pipeline
+        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
+            stages: [
+                {
+                stageName: 'Source',
+                actions: [sourceAction],
+                },
+                {
+                stageName: 'Build',
+                actions: [buildLambdaAction, buildAction],
+                },
+                {
+                stageName: 'Deploy',
+                actions: [deployAction],
+                },
+            ],
+        });
 
-
-        // Add stages to pipeline
-        pipeline.addStage({
-            stageName: 'Source',
-            actions: [sourceAction],
-        });
-        pipeline.addStage({
-            stageName: 'Build',
-            actions: [buildLambdaAction, buildAction],
-        });
-        pipeline.addStage({
-            stageName: 'Deploy',
-            actions: [deployAction],
-        });
+        // // Add stages to pipeline
+        // pipeline.addStage({
+        //     stageName: 'Source',
+        //     actions: [sourceAction],
+        // });
+        // pipeline.addStage({
+        //     stageName: 'Build',
+        //     actions: [buildLambdaAction, buildAction],
+        // });
+        // pipeline.addStage({
+        //     stageName: 'Deploy',
+        //     actions: [deployAction],
+        // });
 
         //pipeline.artifactBucket.grantRead(deployAction.deploymentRole);
         //console.log(this.templateFile);
