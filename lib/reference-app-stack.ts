@@ -8,8 +8,13 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 
 export class ReferenceAppStack extends cdk.Stack {
+
+  public readonly lambdaCode: lambda.CfnParametersCode;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    this.lambdaCode = lambda.Code.fromCfnParameters();
 
     // Create two lambda backend functions
     const hello = new lambda.Function(this, 'GreetLambda', {
