@@ -51,6 +51,11 @@ export class PipelineStack extends cdk.Stack {
                         ],
                     },
                 },
+                artifacts: {
+                    files: [
+                        '**/*',
+                    ]
+                }
             }),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
