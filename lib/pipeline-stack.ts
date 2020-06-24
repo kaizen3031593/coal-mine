@@ -68,16 +68,11 @@ export class PipelineStack extends cdk.Stack {
                         ],
                     },
                 },
-                artifacts: {
-                    files: [
-                        this.templateFile,
-                    ]   
-                }
             }),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
             },
-            encryptionKey: pipeline.artifactBucket.encryptionKey,
+            //encryptionKey: pipeline.artifactBucket.encryptionKey,
         });
 
         const projectBuildOutput = new codepipeline.Artifact('ProjectBuildOutput');
