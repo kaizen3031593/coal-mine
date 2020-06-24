@@ -52,14 +52,47 @@ export class PipelineStack extends cdk.Stack {
                         ],
                     },
                 },
+                artifacts: {
+                    'base-directory': 'dist',
+                    files: [
+                      'LambdaStack.template.json',
+                    ],
+                },
             }),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
             },
-            //encryptionKey: pipeline.artifactBucket.encryptionKey,
         });
 
-        const projectBuildOutput = new codepipeline.Artifact('ProjectBuildOutput');
+        // const lambdaBuild = new codebuild.PipelineProject(this, 'LambdaBuild', {
+        //     buildSpec: codebuild.BuildSpec.fromObject({
+        //       version: '0.2',
+        //       phases: {
+        //         install: {
+        //           commands: [
+        //             'cd lambda',
+        //             'npm install',
+        //           ],
+        //         },
+        //         build: {
+        //           commands: 'npm run build',
+        //         },
+        //       },
+        //       artifacts: {
+        //         'base-directory': 'lambda',
+        //         files: [
+        //           'index.js',
+        //           'node_modules/**/*',
+        //         ],
+        //       },
+        //     }),
+        //     environment: {
+        //       buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+        //     },
+        //   });
+      
+
+        const projectBuildOutput = new codepipeline.Artifact();
         const buildAction = new codepipeline_actions.CodeBuildAction({
             actionName: 'Project_Build',
             input: sourceOutput,
@@ -89,8 +122,8 @@ export class PipelineStack extends cdk.Stack {
             actions: [deployAction],
         });
 
-        pipeline.artifactBucket.grantRead(deployAction.deploymentRole);
-        console.log(this.templateFile);
+        //pipeline.artifactBucket.grantRead(deployAction.deploymentRole);
+        //console.log(this.templateFile);
     }
 }
 
