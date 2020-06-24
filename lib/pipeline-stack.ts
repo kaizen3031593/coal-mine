@@ -92,7 +92,6 @@ export class PipelineStack extends cdk.Stack {
             },
           });
       
-        const lambdaOutput = new codepipeline.Artifact();
         const projectBuildOutput = new codepipeline.Artifact();
         const buildAction = new codepipeline_actions.CodeBuildAction({
             actionName: 'Project_Build',
@@ -101,6 +100,7 @@ export class PipelineStack extends cdk.Stack {
             project: project,
         });
 
+        const lambdaOutput = new codepipeline.Artifact();
         const buildLambdaAction = new codepipeline_actions.CodeBuildAction({
             actionName: 'Lambda_Build',
             input: sourceOutput,
@@ -128,8 +128,12 @@ export class PipelineStack extends cdk.Stack {
                 actions: [sourceAction],
                 },
                 {
-                stageName: 'Build',
-                actions: [buildLambdaAction, buildAction],
+                stageName: 'BuildLambda',
+                actions: [buildLambdaAction],
+                },
+                {
+                stageName: 'BuildCDK',
+                actions: [buildAction],
                 },
                 {
                 stageName: 'Deploy',
