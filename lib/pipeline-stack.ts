@@ -17,24 +17,8 @@ export class PipelineStack extends cdk.Stack {
         //     changeSetName: 'pipelineChangeSet',
         // });
 
-        const bucket = new s3.Bucket(this, 'ArtifactBucket', {
-            versioned: true,
-            removalPolicy: cdk.RemovalPolicy.DESTROY,
-          });
-
-        const role = new iam.Role(this, 'ActionRole', {
-        assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
-        });
-
-        role.addToPolicy(new iam.PolicyStatement({
-            actions: ['s3:*'],
-            resources: ['*'],
-          }));
-
         // Create a pipeline
-        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline',{
-            artifactBucket: bucket,
-        });
+        const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
         // Related to source action
         const sourceOutput = new codepipeline.Artifact();
@@ -48,7 +32,7 @@ export class PipelineStack extends cdk.Stack {
             trigger: codepipeline_actions.GitHubTrigger.POLL,
         });
 
-        const pipelineStack = cdk.Stack.of(this);
+        //const pipelineStack = cdk.Stack.of(this);
 
         // Related to building
         const project = new codebuild.PipelineProject(this, 'ProjectBuild', {
@@ -89,7 +73,6 @@ export class PipelineStack extends cdk.Stack {
             adminPermissions: true,
             stackName: 'deploy',
             templatePath: projectBuildOutput.atPath(this.templateFile),    
-            role,       
         });
 
         // Add stages to pipeline
