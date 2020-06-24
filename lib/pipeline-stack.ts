@@ -3,6 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as iam from '@aws-cdk/aws-iam';
 
 
 export class PipelineStack extends cdk.Stack {
@@ -17,28 +18,8 @@ export class PipelineStack extends cdk.Stack {
 
         // Create a pipeline
         const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-        // const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-        //     stages: [
-        //         {
-        //             stageName: 'Source',
-        //             actions: [sourceAction],
-        //         },
-        //         {
-        //             stageName: 'Build',
-        //             actions: [buildAction],
-        //         },
-        //         {
-        //             stageName: 'PreparePipeline',
-        //             actions: [prepareChangeSetAction],
-        //         },
-        //         // {
-        //         //     stageName: 'ExecutePipeline',
-        //         //     actions: [executeChangeSetAction],
-        //         // }
-        //     ],
-        // });
 
-        // Follow Github Source Action from code-pipeline-actions README
+        // Related to source action
         const sourceOutput = new codepipeline.Artifact();
         const sourceAction = new codepipeline_actions.GitHubSourceAction({
         actionName: 'Github_Source',
@@ -52,28 +33,29 @@ export class PipelineStack extends cdk.Stack {
 
         const pipelineStack = cdk.Stack.of(this);
 
+        // Related to building
         const project = new codebuild.PipelineProject(this, 'ProjectBuild', {
             buildSpec: codebuild.BuildSpec.fromObject({
                 version: '0.2',
                 phases: {
-                install: {
-                    commands: [
-                        'npm install -g aws-cdk',
-                        'npm install',
-                    ],
-                },
-                build: {
-                    commands: [
-                        'npm run build',
-                        'npm run cdk synth',
-                    ],
-                },
+                    install: {
+                        commands: [
+                            'npm install -g aws-cdk',
+                            'npm install',
+                        ],
+                    },
+                    build: {
+                        commands: [
+                            'npm run build',
+                            'npm run cdk synth',
+                        ],
+                    },
                 },
             }),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
             },
-            encryptionKey: pipeline.artifactBucket.encryptionKey,
+            //encryptionKey: pipeline.artifactBucket.encryptionKey,
         });
 
         const projectBuildOutput = new codepipeline.Artifact('ProjectBuildOutput');
@@ -84,14 +66,15 @@ export class PipelineStack extends cdk.Stack {
         project: project,
         });
         
-        const prepareChangeSetAction = new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-            actionName: 'Prepare',
+        // Related to deployment
+        const deployAction = new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+            actionName: 'Deploy',
             adminPermissions: true,
-            stackName: 'prepareChangeSet',
-            templatePath: projectBuildOutput.atPath(this.templateFile),
-            
+            stackName: 'deploy',
+            templatePath: projectBuildOutput.atPath(this.templateFile),            
         });
 
+        // Add stages to pipeline
         pipeline.addStage({
             stageName: 'Source',
             actions: [sourceAction],
@@ -102,10 +85,11 @@ export class PipelineStack extends cdk.Stack {
         });
         pipeline.addStage({
             stageName: 'Deploy',
-            actions: [prepareChangeSetAction],
+            actions: [deployAction],
         });
 
-        pipeline.artifactBucket.grantRead(prepareChangeSetAction.deploymentRole);
+        pipeline.artifactBucket.grantRead(deployAction.deploymentRole);
+        
     }
 }
 
