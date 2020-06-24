@@ -69,9 +69,7 @@ export class PipelineStack extends cdk.Stack {
                     },
                 },
                 artifacts: {
-                    files: [
-                        '**/*',
-                    ]
+                    files: 'project.template.yaml',   
                 }
             }),
             environment: {
@@ -93,7 +91,7 @@ export class PipelineStack extends cdk.Stack {
             actionName: 'CFN_Deploy',
             adminPermissions: true,
             stackName: 'deploy',
-            templatePath: projectBuildOutput.atPath(this.templateFile),    
+            templatePath: projectBuildOutput.atPath('project.template.yaml'),    
             role,       
         });
 
