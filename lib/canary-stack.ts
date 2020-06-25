@@ -84,11 +84,13 @@ export class CanaryStack extends cdk.Stack {
                     return await apiCanaryBlueprint();
                 };`},
             executionRoleArn: role.roleArn,
-            name: 'testlambdacanary',
+            name: 'testLambdaCanary',
             runConfig: { timeoutInSeconds: 60},
             runtimeVersion: 'syn-1.0',
             schedule: { durationInSeconds: '3600', expression: 'rate(1 minute)'},
             startCanaryAfterCreation: true,
+            failureRetentionPeriod: 10,
+            successRetentionPeriod: 10,
         });
 
         const canaryMetric = new cloudwatch.Metric({
