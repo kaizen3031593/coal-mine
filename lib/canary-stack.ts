@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnCanary } from '@aws-cdk/aws-synthetics';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 
 export class CanaryStack extends cdk.Stack {
     constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -82,7 +83,6 @@ export class CanaryStack extends cdk.Stack {
                 exports.handler = async () => {
                     return await apiCanaryBlueprint();
                 };`},
-        
             executionRoleArn: role.roleArn,
             name: 'testlambdacanary',
             runConfig: { timeoutInSeconds: 60},
@@ -90,5 +90,19 @@ export class CanaryStack extends cdk.Stack {
             schedule: { durationInSeconds: '3600', expression: 'rate(1 minute)'},
             startCanaryAfterCreation: true,
         });
+
+        const canaryMetric = new cloudwatch.Metric({
+            namespace: 'CloudWatchSynthetics',
+            metricName: 'Duration',
+            statistic: 'avg',
+            period: cdk.Duration.minutes(1),
+        }).attachTo(canary);
+
+        new cloudwatch.Alarm(this, 'CanaryAlarm1', {
+            metric: canaryMetric,
+            threshold: 16500,
+            evaluationPeriods: 2,
+            alarmName: 'CanaryAlarm1',
+        })
     }
 }

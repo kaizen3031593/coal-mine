@@ -7,8 +7,7 @@ import { CfnCanary } from '@aws-cdk/aws-synthetics';
 import * as iam from '@aws-cdk/aws-iam';
 
 export interface PipelineStackProps extends cdk.StackProps {
-    readonly lambdaCode1: lambda.CfnParametersCode;
-    //readonly lambdaCode2: lambda.CfnParametersCode;
+    readonly lambdaCode: lambda.CfnParametersCode;
 }
 
 export class PipelineStack extends cdk.Stack {
@@ -108,7 +107,7 @@ export class PipelineStack extends cdk.Stack {
             stackName: 'LambdaDeployStack',
             templatePath: projectBuildOutput.atPath('LambdaStack.template.json'),   
             parameterOverrides: {
-                ...props.lambdaCode1.assign(lambdaOutput.s3Location),
+                ...props.lambdaCode.assign(lambdaOutput.s3Location),
             },
             extraInputs: [lambdaOutput], 
         });

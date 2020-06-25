@@ -7,7 +7,7 @@ import { CanaryStack } from '../lib/canary-stack';
 const app = new cdk.App();
 const lambdaStack = new ReferenceAppStack(app, 'LambdaStack');
 new PipelineStack(app, 'PipelineStack', {
-    lambdaCode1: lambdaStack.lambdaCode1,
+    lambdaCode: lambdaStack.lambdaCode,
 });
 new CanaryStack(app, 'CanaryStack');
 
