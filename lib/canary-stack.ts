@@ -84,7 +84,7 @@ export class CanaryStack extends cdk.Stack {
                     return await apiCanaryBlueprint();
                 };`},
             executionRoleArn: role.roleArn,
-            name: 'testLambdaCanary',
+            name: 'testlambdacanary',
             runConfig: { timeoutInSeconds: 60},
             runtimeVersion: 'syn-1.0',
             schedule: { durationInSeconds: '3600', expression: 'rate(1 minute)'},
