@@ -199,8 +199,7 @@ export class PipelineStack extends cdk.Stack {
         const canaryLambda = new lambda.Function(this, 'canaryLambda',{
             runtime: lambda.Runtime.NODEJS_12_X,
             handler: 'index.handler',
-            code: lambda.Code.fromInline(`var synthetics = require('Synthetics');
-            const log = require('SyntheticsLogger');
+            code: lambda.Code.fromInline(`
             const https = require('https');
             const http = require('http');
             
@@ -209,7 +208,6 @@ export class PipelineStack extends cdk.Stack {
             
                 const verifyRequest = async function (requestOption) {
                   return new Promise((resolve, reject) => {
-                    log.info("Making request with options: " + JSON.stringify(requestOption));
                     let req
                     if (requestOption.port === 443) {
                       req = https.request(requestOption);
@@ -217,13 +215,11 @@ export class PipelineStack extends cdk.Stack {
                       req = http.request(requestOption);
                     }
                     req.on('response', (res) => {
-                      log.info(\`Status Code: \${res.statusCode}\`)
-                      log.info(\`Response Headers: \${JSON.stringify(res.headers)}\`)
                       if (res.statusCode !== 200) {
                          reject("Failed: " + requestOption.path);
                       }
                       res.on('data', (d) => {
-                        log.info("Response: " + d);
+                        console.log("Response: " + d);
                       });
                       res.on('end', () => {
                         resolve();
@@ -242,8 +238,8 @@ export class PipelineStack extends cdk.Stack {
                 }
             
                 const headers = {}
-                headers['User-Agent'] = [synthetics.getCanaryUserAgentString(), headers['User-Agent']].join(' ');
-                const requestOptions = {"hostname":"ajt66lp5wj.execute-api.us-east-1.amazonaws.com","method":"GET","path":"/prod/","port":443}
+                headers['User-Agent'] = [headers['User-Agent']].join(' ');
+                const requestOptions = {"hostname":"ajt66lp5wj.execute-api.us-east-1.amazonaws.com","method":"GET","path":"/prod/?name=bobby&food=pizza","port":443}
                 requestOptions['headers'] = headers;
                 await verifyRequest(requestOptions);
             };
