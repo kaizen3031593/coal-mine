@@ -10,7 +10,7 @@ export class CanaryL2Stack extends cdk.Stack {
           handler: 'index.handler',
           runtime: Runtime.SYN_1_0,
           canaryName: 'myl2canary',
-          code: new Code(`var synthetics = require('Synthetics');
+          code: Code.fromInline(`var synthetics = require('Synthetics');
           const log = require('SyntheticsLogger');
           const https = require('https');
           const http = require('http');
@@ -64,18 +64,8 @@ export class CanaryL2Stack extends cdk.Stack {
           };`)
       });
 
-        const canaryMetric = new cloudwatch.Metric({
-            namespace: 'CloudWatchSynthetics',
-            metricName: 'Duration',
-            statistic: 'avg',
-            period: cdk.Duration.minutes(1),
-        }).attachTo(canary);
+        const canaryMetric = canary.metricDuration();
 
-        new cloudwatch.Alarm(this, 'CanaryL2Alarm', {
-            metric: canaryMetric,
-            threshold: 16500,
-            evaluationPeriods: 2,
-            alarmName: 'CanaryL2Alarm',
-        })
+        canary.addAlarm('CanaryAlarm2');
     }
 }

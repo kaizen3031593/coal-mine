@@ -95,14 +95,14 @@ export class CanaryStack extends cdk.Stack {
 
         const canaryMetric = new cloudwatch.Metric({
             namespace: 'CloudWatchSynthetics',
-            metricName: 'Duration',
+            metricName: 'SuccessPercent',
             statistic: 'avg',
-            period: cdk.Duration.minutes(1),
+            period: cdk.Duration.minutes(5),
         }).attachTo(canary);
 
         new cloudwatch.Alarm(this, 'CanaryAlarm1', {
             metric: canaryMetric,
-            threshold: 16500,
+            threshold: 99,
             evaluationPeriods: 2,
             alarmName: 'CanaryAlarm1',
         })

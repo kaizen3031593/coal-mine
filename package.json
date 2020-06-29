@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "postinstall": "../canary/aws-cdk/link-all.sh"
+    "postinstall": "../aws/aws-cdk/link-all.sh"
   },
   "devDependencies": {
     "aws-cdk": "^1.46.0",
