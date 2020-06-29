@@ -8,8 +8,6 @@ export class CanaryL2Stack extends cdk.Stack {
 
         const canary = new Canary(this, 'my_test', {
           handler: 'index.handler',
-          runtime: Runtime.SYN_1_0,
-          canaryName: 'myl2canary',
           code: Code.fromInline(`var synthetics = require('Synthetics');
           const log = require('SyntheticsLogger');
           const https = require('https');
@@ -64,8 +62,10 @@ export class CanaryL2Stack extends cdk.Stack {
           };`)
       });
 
-        const canaryMetric = canary.metricDuration();
+        const canaryMetric = canary.metricSuccess();
 
         canary.addAlarm('CanaryAlarm2');
+
+        //console.log(canary.canaryState);
     }
 }
