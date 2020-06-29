@@ -33,7 +33,13 @@ https://<domain_name>.amazonaws.com/prod/?name=popeye&food=spinach
 
 You should receive a greeting as a response.
 
-## Canary: 
+## Canaries: 
 
-Part of the Pipeline is a stage that involves a canary. Currently canaries are not supported actions in code pipeline, so the canary is just a lambda that hits the api endpoint. 
+In addition to the `LambdaStack` and the `PipelineStack` there are 2 more stacks in this project that help monitor the availability of the lambda backend api. This is the meat of the project. I hope to compare the L1 Canary with the L2 Canary that I am building.
+
+For both `CanaryStack` and `CanaryL2Stack`, the architecture is the same. They both create a canary (along with necessary resources like an s3 bucket and an iam role), attach a metric to it, and use that metric to create an alarm. I believe that this is the basic starting point for canary usage with AWS.
+
+The idea is to show fidelity between `CanaryStack` and `CanaryL2Stack` while also showing how much easier it is to get things done with the L2 Canary.
+
+
 
