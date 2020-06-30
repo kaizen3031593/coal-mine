@@ -8,6 +8,7 @@ export class CanaryL2Stack extends cdk.Stack {
 
         const canary = new Canary(this, 'my_test', {
           handler: 'index.handler',
+          canaryName: 'myl2canary',
           code: Code.fromInline(`var synthetics = require('Synthetics');
           const log = require('SyntheticsLogger');
           const https = require('https');
