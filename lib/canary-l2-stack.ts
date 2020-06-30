@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Canary, Code, Runtime } from '@aws-cdk/aws-synthetics';
+import { Canary, Code } from '@aws-cdk/aws-synthetics';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 
 export class CanaryL2Stack extends cdk.Stack {
@@ -64,7 +64,12 @@ export class CanaryL2Stack extends cdk.Stack {
 
         const canaryMetric = canary.metricSuccess();
 
-        canary.addAlarm('CanaryAlarm2');
+        canary.createAlarm('CanaryAlarm2',{
+          metric: canaryMetric,
+          evaluationPeriods: 2,
+          threshold: 99,
+          comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+        });
 
         //console.log(canary.canaryState);
     }

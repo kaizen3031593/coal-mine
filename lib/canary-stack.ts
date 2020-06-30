@@ -103,6 +103,7 @@ export class CanaryStack extends cdk.Stack {
         new cloudwatch.Alarm(this, 'CanaryAlarm1', {
             metric: canaryMetric,
             threshold: 99,
+            comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
             evaluationPeriods: 2,
             alarmName: 'CanaryAlarm1',
         })
