@@ -10,6 +10,6 @@ const lambdaStack = new ReferenceAppStack(app, 'LambdaStack');
 new PipelineStack(app, 'PipelineStack', {
     lambdaCode: lambdaStack.lambdaCode,
 });
-//new CanaryStack(app, 'CanaryStack');
+new CanaryStack(app, 'CanaryStack');
 //new CanaryL2Stack(app, 'CanaryL2Stack');
 app.synth();

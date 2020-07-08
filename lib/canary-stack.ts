@@ -38,9 +38,9 @@ export class CanaryStack extends cdk.Stack {
         const canary = new CfnCanary(this, 'test-lambda-canary', {
           artifactS3Location: bucket.s3UrlForObject(),
           code: {
-              handler: 'index.handler',
+              handler: 'example.handler',
               s3Bucket: lambdaBucket.bucketName,
-              s3Key: 'index.js',
+              s3Key: 'example.js',
           },
           executionRoleArn: role.roleArn,
           name: 'testlambdacanary',
